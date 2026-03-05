@@ -1,0 +1,82 @@
+{
+  "mcpServers": {
+    "sqlite": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sqlite",
+        "/Users/santhoshbajjuri/banking_app/banking.db"
+      ]
+    }
+  },
+  "permissions": {
+    "allow": [
+      "Bash(python app.py)",
+      "Bash(pip install *)",
+      "Bash(flask *)",
+      "Bash(git *)",
+      "Bash(python -m pytest *)",
+      "Bash(python3 -m py_compile *)",
+      "Bash(python3 -m black *)"
+    ],
+    "deny": []
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/santhoshbajjuri/banking_app/.claude/hooks/block-env-read.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/santhoshbajjuri/banking_app/.claude/hooks/block-dangerous-bash.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/santhoshbajjuri/banking_app/.claude/hooks/syntax-check.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 /Users/santhoshbajjuri/banking_app/.claude/hooks/auto-format.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/santhoshbajjuri/banking_app/.claude/hooks/change-log.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/santhoshbajjuri/banking_app/.claude/hooks/session-summary.py"
+          }
+        ]
+      }
+    ]
+  }
+}

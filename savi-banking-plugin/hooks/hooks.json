@@ -1,0 +1,35 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json,sys; d=json.load(sys.stdin); p=d.get('tool_input',{}).get('file_path',''); print(f'[security] Blocked .env read') or __import__('sys').exit(2) if p.endswith('.env') and not p.endswith('.env.example') else None\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json,sys,re; d=json.load(sys.stdin); cmd=d.get('tool_input',{}).get('command',''); patterns=[('rm\\\\s+-rf?\\\\s+\\\\.','rm -rf on project'),('git\\\\s+push.*--force','force push'),('git\\\\s+reset\\\\s+--hard','reset --hard')]; [print(f'[safety] Blocked: {r}') or sys.exit(2) for p,r in patterns if re.search(p,cmd,re.I)]\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json,sys,subprocess; d=json.load(sys.stdin); p=d.get('tool_input',{}).get('file_path',''); r=subprocess.run(['python3','-m','py_compile',p],capture_output=True,text=True) if p.endswith('.py') else type('',(),{'returncode':0})(); print(r.stderr) or sys.exit(2) if r.returncode else None\""
+          }
+        ]
+      }
+    ]
+  }
+}

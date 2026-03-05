@@ -1,7 +1,4 @@
-from flask import (
-    Flask, render_template, request, redirect,
-    url_for, session, flash
-)
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from functools import wraps
 from datetime import date
 import mock_data as db
@@ -21,6 +18,7 @@ def inject_notifications():
 
 # ── Auth helper ──────────────────────────────────────────────────────────────
 
+
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -28,10 +26,12 @@ def login_required(f):
             flash("Please sign in to access your account.", "warning")
             return redirect(url_for("login"))
         return f(*args, **kwargs)
+
     return decorated
 
 
 # ── Alert helper ─────────────────────────────────────────────────────────────
+
 
 def _check_alerts(user_email, txn):
     if user_email not in db.ALERTS:
@@ -43,17 +43,20 @@ def _check_alerts(user_email, txn):
         if alert["account_id"] != "all" and alert["account_id"] != txn["account_id"]:
             continue
         if abs(txn["amount"]) > alert["threshold"]:
-            notifs.append({
-                "id": f"ntf{len(notifs):03d}",
-                "txn_id": txn["id"],
-                "message": f"Alert: ${abs(txn['amount']):,.2f} transaction at \"{txn['description']}\" exceeded your ${alert['threshold']:,.2f} threshold.",
-                "amount": txn["amount"],
-                "date": txn["date"],
-                "read": False,
-            })
+            notifs.append(
+                {
+                    "id": f"ntf{len(notifs):03d}",
+                    "txn_id": txn["id"],
+                    "message": f"Alert: ${abs(txn['amount']):,.2f} transaction at \"{txn['description']}\" exceeded your ${alert['threshold']:,.2f} threshold.",
+                    "amount": txn["amount"],
+                    "date": txn["date"],
+                    "read": False,
+                }
+            )
 
 
 # ── Public routes ────────────────────────────────────────────────────────────
+
 
 @app.route("/")
 def index():
@@ -92,7 +95,11 @@ def signup():
             flash("Password must be at least 8 characters.", "error")
         else:
             # Register new demo user (in-memory only)
-            db.USERS[email] = {"password": password, "name": name, "member_since": str(date.today().year)}
+            db.USERS[email] = {
+                "password": password,
+                "name": name,
+                "member_since": str(date.today().year),
+            }
             session["user_email"] = email
             session["user_name"] = name
             flash(f"Account created! Welcome, {name.split()[0]}.", "success")
@@ -109,6 +116,7 @@ def logout():
 
 
 # ── Protected routes ─────────────────────────────────────────────────────────
+
 
 @app.route("/dashboard")
 @login_required
@@ -180,14 +188,17 @@ def transfer():
             description += f" — {memo}"
 
         # Append transaction
-        db.TRANSACTIONS.insert(0, {
-            "id": f"txn{len(db.TRANSACTIONS):03d}",
-            "date": transfer_date,
-            "description": description,
-            "amount": -round(amount, 2),
-            "category": "Transfer",
-            "account_id": from_acct,
-        })
+        db.TRANSACTIONS.insert(
+            0,
+            {
+                "id": f"txn{len(db.TRANSACTIONS):03d}",
+                "date": transfer_date,
+                "description": description,
+                "amount": -round(amount, 2),
+                "category": "Transfer",
+                "account_id": from_acct,
+            },
+        )
         _check_alerts(session["user_email"], db.TRANSACTIONS[0])
 
         # Update balance
@@ -212,7 +223,14 @@ def alerts():
             account_id = request.form.get("account_id", "all")
             if threshold > 0:
                 rules = db.ALERTS[email]
-                rules.append({"id": f"alr{len(rules):03d}", "threshold": threshold, "account_id": account_id, "active": True})
+                rules.append(
+                    {
+                        "id": f"alr{len(rules):03d}",
+                        "threshold": threshold,
+                        "account_id": account_id,
+                        "active": True,
+                    }
+                )
                 flash(f"Alert created for transactions over ${threshold:,.2f}.", "success")
         elif action == "delete":
             alert_id = request.form.get("alert_id")
@@ -224,7 +242,9 @@ def alerts():
                 if a["id"] == alert_id:
                     a["active"] = not a["active"]
         return redirect(url_for("alerts"))
-    return render_template("alerts.html", alerts=db.ALERTS[email], accounts=db.ACCOUNTS, user_name=session["user_name"])
+    return render_template(
+        "alerts.html", alerts=db.ALERTS[email], accounts=db.ACCOUNTS, user_name=session["user_name"]
+    )
 
 
 @app.route("/notifications/dismiss/<ntf_id>", methods=["POST"])

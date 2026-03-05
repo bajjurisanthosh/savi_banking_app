@@ -1,0 +1,10 @@
+{
+  "name": "savi-banking",
+  "description": "Claude Code plugin for the SaVi banking app — security audits, route scaffolding, test running, and transaction analysis.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Santhosh Bajjuri"
+  },
+  "homepage": "https://github.com/santhoshbajjuri/banking_app",
+  "license": "MIT"
+}
