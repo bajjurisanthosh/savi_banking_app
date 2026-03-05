@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Account Overview — SaVi{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero--blue">
+  <div class="container">
+    <h1>Good morning, {{ user_name.split()[0] }} 👋</h1>
+    <p>Here's your financial overview for today.</p>
+  </div>
+</section>
+
+<div class="container dashboard">
+
+  <!-- ── Account Cards ─────────────────────────────────────────────── -->
+  <section class="dashboard__section">
+    <div class="section-header-row">
+      <h2>Your Accounts</h2>
+      <a href="{{ url_for('signup') }}" class="btn btn--outline btn--sm">+ Open Account</a>
+    </div>
+    <div class="account-cards">
+      {% for acct in accounts %}
+      <div class="account-card" style="--acct-color: {{ acct.color }}">
+        <div class="account-card__header">
+          <span class="account-card__type">{{ acct.type }}</span>
+          <span class="account-card__number">{{ acct.number }}</span>
+        </div>
+        <div class="account-card__balance">
+          {% if acct.balance < 0 %}
+            <span class="balance-label">Balance Owed</span>
+            <span class="balance-amount balance-amount--negative">
+              -${{ "{:,.2f}".format(acct.balance | abs) }}
+            </span>
+          {% else %}
+            <span class="balance-label">Current Balance</span>
+            <span class="balance-amount">${{ "{:,.2f}".format(acct.balance) }}</span>
+          {% endif %}
+        </div>
+        <div class="account-card__footer">
+          <span>
+            {% if acct.type == "Credit Card" %}Available Credit:{% else %}Available:{% endif %}
+            ${{ "{:,.2f}".format(acct.available) }}
+          </span>
+          <a href="{{ url_for('transactions') }}?account={{ acct.id }}" class="account-card__link">View activity →</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ── Quick Actions ─────────────────────────────────────────────── -->
+  <section class="dashboard__section">
+    <h2>Quick Actions</h2>
+    <div class="quick-actions">
+      <a href="{{ url_for('transfer') }}" class="quick-action">
+        <div class="quick-action__icon quick-action__icon--blue">&#8652;</div>
+        <span>Transfer</span>
+      </a>
+      <a href="{{ url_for('transfer') }}" class="quick-action">
+        <div class="quick-action__icon quick-action__icon--red">&#128179;</div>
+        <span>Pay Bills</span>
+      </a>
+      <a href="{{ url_for('transactions') }}" class="quick-action">
+        <div class="quick-action__icon quick-action__icon--green">&#128203;</div>
+        <span>Activity</span>
+      </a>
+      <a href="#" class="quick-action">
+        <div class="quick-action__icon quick-action__icon--purple">&#128247;</div>
+        <span>Deposit Check</span>
+      </a>
+      <a href="#" class="quick-action">
+        <div class="quick-action__icon quick-action__icon--orange">&#128274;</div>
+        <span>Card Lock</span>
+      </a>
+      <a href="#" class="quick-action">
+        <div class="quick-action__icon quick-action__icon--teal">&#128200;</div>
+        <span>Budgets</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ── Recent Transactions ───────────────────────────────────────── -->
+  <section class="dashboard__section">
+    <div class="section-header-row">
+      <h2>Recent Transactions</h2>
+      <a href="{{ url_for('transactions') }}" class="btn btn--ghost btn--sm">View All</a>
+    </div>
+    <div class="txn-list">
+      {% for txn in recent_transactions %}
+      <div class="txn-row">
+        <div class="txn-row__icon">{{ txn.category[0] }}</div>
+        <div class="txn-row__info">
+          <span class="txn-row__desc">{{ txn.description }}</span>
+          <span class="txn-row__meta">{{ txn.category }} · {{ txn.date }}</span>
+        </div>
+        <span class="txn-row__amount {% if txn.amount > 0 %}txn-row__amount--credit{% endif %}">
+          {% if txn.amount > 0 %}+{% endif %}${{ "{:,.2f}".format(txn.amount | abs) }}
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ── Promotions ─────────────────────────────────────────────────── -->
+  <section class="dashboard__section">
+    <div class="promo-tiles">
+      <div class="promo-tile promo-tile--red">
+        <h3>Refer a friend, earn $100</h3>
+        <p>Share your unique link and get $100 when they open and fund an account.</p>
+        <a href="#" class="btn btn--white btn--sm">Learn More</a>
+      </div>
+      <div class="promo-tile promo-tile--blue">
+        <h3>Upgrade to Preferred Rewards</h3>
+        <p>Earn up to 75% more rewards on every purchase with Preferred Rewards.</p>
+        <a href="#" class="btn btn--white btn--sm">Enroll Now</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

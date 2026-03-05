@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block title %}SaVi — Better Money. Better Life.{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ───────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container hero__inner">
+    <div class="hero__text">
+      <p class="hero__eyebrow">America's Most Trusted Bank</p>
+      <h1 class="hero__headline">
+        Banking built<br/>for <span class="text-red">your life</span>.
+      </h1>
+      <p class="hero__sub">
+        Open a checking account with no monthly fees, earn competitive rates
+        on savings, and manage everything in one place.
+      </p>
+      <div class="hero__cta">
+        <a href="{{ url_for('signup') }}" class="btn btn--primary btn--lg">Open an Account</a>
+        <a href="{{ url_for('login') }}" class="btn btn--ghost btn--lg">Sign In</a>
+      </div>
+      <p class="hero__note">No monthly fees. No minimums. FDIC insured.</p>
+    </div>
+    <div class="hero__card-wrap">
+      <div class="hero__card">
+        <div class="hero__card-chip"></div>
+        <div class="hero__card-number">•••• •••• •••• 4821</div>
+        <div class="hero__card-footer">
+          <span>Alex Johnson</span>
+          <span class="logo-icon logo-icon--card">S</span>
+        </div>
+      </div>
+      <div class="hero__card hero__card--back">
+        <div class="hero__card-chip"></div>
+        <div class="hero__card-number">•••• •••• •••• 7742</div>
+        <div class="hero__card-footer">
+          <span>Alex Johnson</span>
+          <span class="logo-icon logo-icon--card">S</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Stats bar ──────────────────────────────────────────────────────── -->
+<section class="stats-bar">
+  <div class="container stats-bar__inner">
+    <div class="stat">
+      <span class="stat__value">68M+</span>
+      <span class="stat__label">Customers</span>
+    </div>
+    <div class="stat">
+      <span class="stat__value">4,200+</span>
+      <span class="stat__label">Branch Locations</span>
+    </div>
+    <div class="stat">
+      <span class="stat__value">16,000+</span>
+      <span class="stat__label">ATMs Nationwide</span>
+    </div>
+    <div class="stat">
+      <span class="stat__value">4.8★</span>
+      <span class="stat__label">App Store Rating</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Products ───────────────────────────────────────────────────────── -->
+<section class="products section">
+  <div class="container">
+    <div class="section__header">
+      <h2>Products designed for you</h2>
+      <p>Choose the right accounts and cards to reach your financial goals.</p>
+    </div>
+    <div class="product-grid">
+      <div class="product-card">
+        <div class="product-card__icon product-card__icon--blue">&#9775;</div>
+        <h3>Advantage Banking</h3>
+        <p>Everyday checking with no monthly fee when you meet simple requirements.</p>
+        <ul class="product-card__features">
+          <li>No monthly maintenance fee</li>
+          <li>Zelle® money transfers</li>
+          <li>Mobile check deposit</li>
+          <li>Overdraft protection</li>
+        </ul>
+        <a href="{{ url_for('signup') }}" class="btn btn--primary btn--block">Open Checking</a>
+      </div>
+      <div class="product-card product-card--featured">
+        <div class="product-card__badge">Most Popular</div>
+        <div class="product-card__icon product-card__icon--red">&#128176;</div>
+        <h3>Rewards Savings</h3>
+        <p>High-yield savings with a competitive APY and no fees.</p>
+        <ul class="product-card__features">
+          <li>4.20% APY*</li>
+          <li>No minimum balance</li>
+          <li>Automatic transfers</li>
+          <li>FDIC insured up to $250,000</li>
+        </ul>
+        <a href="{{ url_for('signup') }}" class="btn btn--primary btn--block">Open Savings</a>
+      </div>
+      <div class="product-card">
+        <div class="product-card__icon product-card__icon--green">&#128179;</div>
+        <h3>Unlimited Cash Rewards</h3>
+        <p>Earn unlimited 1.5% cash back on every purchase, every day.</p>
+        <ul class="product-card__features">
+          <li>1.5% unlimited cash back</li>
+          <li>No annual fee</li>
+          <li>$200 online cash rewards bonus</li>
+          <li>0% intro APR for 15 months</li>
+        </ul>
+        <a href="{{ url_for('signup') }}" class="btn btn--primary btn--block">Apply Now</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Why SaVi ───────────────────────────────────────────────────── -->
+<section class="features section section--gray">
+  <div class="container">
+    <div class="section__header">
+      <h2>Why millions choose SaVi</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-item__icon">🔒</div>
+        <h4>Bank-Grade Security</h4>
+        <p>256-bit encryption, biometric authentication, and 24/7 fraud monitoring.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-item__icon">📱</div>
+        <h4>Award-Winning App</h4>
+        <p>Manage accounts, deposit checks, and pay bills from anywhere.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-item__icon">💬</div>
+        <h4>24/7 Support</h4>
+        <p>Talk to a real person any time via chat, phone, or in-branch.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-item__icon">⚡</div>
+        <h4>Instant Transfers</h4>
+        <p>Send and receive money in seconds with Zelle® and real-time payments.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-item__icon">🏦</div>
+        <h4>4,200+ Branches</h4>
+        <p>Coast-to-coast network with extended hours and drive-through banking.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-item__icon">📈</div>
+        <h4>Smart Insights</h4>
+        <p>Personalized spending analysis and budgeting tools built right in.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Promo banner ───────────────────────────────────────────────────── -->
+<section class="promo section">
+  <div class="container">
+    <div class="promo-banner">
+      <div class="promo-banner__text">
+        <p class="promo-banner__eyebrow">Limited Time Offer</p>
+        <h2>Earn $300 when you open a new checking account</h2>
+        <p>Set up qualifying direct deposits within 90 days and receive your bonus automatically.</p>
+        <a href="{{ url_for('signup') }}" class="btn btn--white btn--lg">Get $300 Bonus</a>
+      </div>
+      <div class="promo-banner__badge">$300<small>BONUS</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Testimonials ───────────────────────────────────────────────────── -->
+<section class="testimonials section section--gray">
+  <div class="container">
+    <div class="section__header">
+      <h2>Trusted by millions</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-card__stars">★★★★★</div>
+        <p>"I switched to SaVi 2 years ago and haven't looked back. The app is incredible and customer support actually helps."</p>
+        <div class="testimonial-card__author">— Sarah M., Chicago</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card__stars">★★★★★</div>
+        <p>"The savings rate alone was worth it. I'm earning 10x more than my old bank. Setup took 5 minutes."</p>
+        <div class="testimonial-card__author">— James R., Austin</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-card__stars">★★★★★</div>
+        <p>"No fees, great app, and the cash back card pays for itself every month. Best banking decision I've made."</p>
+        <div class="testimonial-card__author">— Priya K., Seattle</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

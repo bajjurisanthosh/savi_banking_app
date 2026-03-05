@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Transfer & Pay — SaVi{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero--blue">
+  <div class="container">
+    <h1>Transfer &amp; Pay</h1>
+    <p>Send money, pay bills, or move funds between your accounts.</p>
+  </div>
+</section>
+
+<div class="container transfer-page">
+
+  <!-- ── Tab nav ─────────────────────────────────────────────────────── -->
+  <div class="tab-nav">
+    <button class="tab-nav__btn tab-nav__btn--active" data-tab="transfer">Transfer Money</button>
+    <button class="tab-nav__btn" data-tab="bill">Pay a Bill</button>
+    <button class="tab-nav__btn" data-tab="zelle">Send with Zelle®</button>
+  </div>
+
+  <!-- ── Transfer Form ───────────────────────────────────────────────── -->
+  <div class="tab-panel tab-panel--active" id="tab-transfer">
+    <div class="transfer-layout">
+      <div class="transfer-form-card">
+        <h2>Make a Transfer</h2>
+        <form method="POST" class="transfer-form" novalidate>
+          <div class="form-group">
+            <label for="from_account">From Account</label>
+            <select name="from_account" id="from_account" required>
+              {% for acct in accounts %}
+                <option value="{{ acct.id }}">
+                  {{ acct.type }} {{ acct.number }} —
+                  {% if acct.balance < 0 %}-{% endif %}${{ "{:,.2f}".format(acct.balance | abs) }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="to_payee">To / Payee</label>
+            <input
+              type="text"
+              id="to_payee"
+              name="to_payee"
+              placeholder="e.g. Electric Company, Savings Account…"
+              required
+              list="payee-suggestions"
+            />
+            <datalist id="payee-suggestions">
+              <option value="Checking Account ****4821">
+              <option value="Savings Account ****3309">
+              <option value="Credit Card ****7742">
+              <option value="AT&T Wireless">
+              <option value="Electric Bill - PG&E">
+              <option value="Netflix">
+              <option value="Spotify">
+            </datalist>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="amount">Amount</label>
+              <div class="input-prefix">
+                <span>$</span>
+                <input
+                  type="number"
+                  id="amount"
+                  name="amount"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="transfer_date">Date</label>
+              <input type="date" id="transfer_date" name="transfer_date" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="memo">Memo <span class="label-optional">(optional)</span></label>
+            <input type="text" id="memo" name="memo" placeholder="Add a note…" maxlength="80" />
+          </div>
+
+          <div class="transfer-review" id="transfer-review" style="display:none">
+            <h4>Review Transfer</h4>
+            <div class="review-row"><span>From</span><span id="rev-from">—</span></div>
+            <div class="review-row"><span>To</span><span id="rev-to">—</span></div>
+            <div class="review-row"><span>Amount</span><span id="rev-amount">—</span></div>
+            <div class="review-row"><span>Date</span><span id="rev-date">—</span></div>
+          </div>
+
+          <div class="transfer-form__actions">
+            <button type="button" class="btn btn--outline btn--lg" id="review-btn">Review</button>
+            <button type="submit" class="btn btn--primary btn--lg" id="submit-btn" style="display:none">Confirm Transfer</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ── Side info ─────────────────────────────────────────────── -->
+      <div class="transfer-side">
+        <div class="info-card">
+          <h4>Account Balances</h4>
+          {% for acct in accounts %}
+          <div class="info-card__row">
+            <span>{{ acct.type }} {{ acct.number }}</span>
+            <span class="{% if acct.balance < 0 %}txn-debit{% endif %}">
+              {% if acct.balance < 0 %}-{% endif %}${{ "{:,.2f}".format(acct.balance | abs) }}
+            </span>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="info-card info-card--tip">
+          <h4>Transfer Tips</h4>
+          <ul>
+            <li>Transfers between SaVi accounts are instant.</li>
+            <li>External transfers take 1–3 business days.</li>
+            <li>Same-day transfers must be submitted before 5 PM ET.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Bill Pay (static) ───────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-bill">
+    <div class="coming-soon">
+      <div class="coming-soon__icon">📄</div>
+      <h2>Bill Pay</h2>
+      <p>Pay any company or individual directly from your SaVi account. Use the Transfer tab above to make a payment now.</p>
+    </div>
+  </div>
+
+  <!-- ── Zelle (static) ─────────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-zelle">
+    <div class="coming-soon">
+      <div class="coming-soon__icon">⚡</div>
+      <h2>Zelle® Payments</h2>
+      <p>Send money directly to friends and family using just their email or phone number — typically within minutes.</p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

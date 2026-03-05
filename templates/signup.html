@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Open an Account — SaVi{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+  <div class="auth-card auth-card--wide">
+    <div class="auth-card__logo">
+      <span class="logo-icon">S</span>
+      <span>SaVi</span>
+    </div>
+    <h1 class="auth-card__title">Open your account</h1>
+    <p class="auth-card__sub">It only takes a few minutes — no fees, no minimums.</p>
+
+    <form method="POST" class="auth-form" novalidate>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="Alex Johnson" required autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">Create Passcode</label>
+          <div class="input-wrap">
+            <input type="password" id="password" name="password" placeholder="Min. 8 characters" required autocomplete="new-password" />
+            <button type="button" class="input-wrap__toggle" data-target="password">Show</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" placeholder="(555) 000-0000" autocomplete="tel" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="account_type">Account Type</label>
+        <select id="account_type" name="account_type">
+          <option value="checking">Advantage Checking — No monthly fee</option>
+          <option value="savings">Rewards Savings — 4.20% APY</option>
+          <option value="both">Both Checking &amp; Savings</option>
+        </select>
+      </div>
+
+      <div class="form-check">
+        <input type="checkbox" id="terms" name="terms" required />
+        <label for="terms">
+          I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--block btn--lg">Open My Account</button>
+    </form>
+
+    <div class="auth-divider"><span>Already a customer?</span></div>
+    <a href="{{ url_for('login') }}" class="btn btn--outline btn--block">Sign In</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Transaction History — SaVi{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero--blue">
+  <div class="container">
+    <h1>Transaction History</h1>
+    <p>Review and search all account activity.</p>
+  </div>
+</section>
+
+<div class="container">
+
+  <!-- ── Filters ─────────────────────────────────────────────────────── -->
+  <form method="GET" class="filter-bar">
+    <div class="filter-bar__group">
+      <label for="account">Account</label>
+      <select name="account" id="account" onchange="this.form.submit()">
+        <option value="all" {% if account_filter == 'all' %}selected{% endif %}>All Accounts</option>
+        {% for acct in accounts %}
+          <option value="{{ acct.id }}" {% if account_filter == acct.id %}selected{% endif %}>
+            {{ acct.type }} {{ acct.number }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-bar__group">
+      <label for="category">Category</label>
+      <select name="category" id="category" onchange="this.form.submit()">
+        <option value="all" {% if category_filter == 'all' %}selected{% endif %}>All Categories</option>
+        {% for cat in categories %}
+          <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %}>{{ cat }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-bar__group filter-bar__group--search">
+      <label for="search">Search</label>
+      <input type="text" id="search" placeholder="Search transactions…" oninput="filterTable(this.value)" />
+    </div>
+    <div class="filter-bar__count">
+      <span id="txn-count">{{ transactions | length }}</span> transactions
+    </div>
+  </form>
+
+  <!-- ── Table ───────────────────────────────────────────────────────── -->
+  <div class="table-wrap">
+    <table class="txn-table" id="txn-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Category</th>
+          <th>Account</th>
+          <th class="text-right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for txn in transactions %}
+        {% set acct = accounts | selectattr('id', 'equalto', txn.account_id) | first %}
+        <tr class="txn-row-tr" data-desc="{{ txn.description | lower }}">
+          <td class="txn-date">{{ txn.date }}</td>
+          <td>
+            <span class="txn-badge" style="background: var(--color-bg-subtle)">
+              {{ txn.category[0] }}
+            </span>
+            {{ txn.description }}
+          </td>
+          <td><span class="category-pill">{{ txn.category }}</span></td>
+          <td class="txn-acct-type">
+            {% if acct %}{{ acct.type }} {{ acct.number }}{% endif %}
+          </td>
+          <td class="text-right {% if txn.amount > 0 %}txn-credit{% else %}txn-debit{% endif %}">
+            {% if txn.amount > 0 %}+{% endif %}${{ "{:,.2f}".format(txn.amount | abs) }}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="txn-empty">No transactions found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Summary ─────────────────────────────────────────────────────── -->
+  {% if transactions %}
+  <div class="txn-summary">
+    {% set debits = transactions | selectattr('amount', 'lt', 0) | list %}
+    {% set credits = transactions | selectattr('amount', 'gt', 0) | list %}
+    {% set total_debits = debits | sum(attribute='amount') %}
+    {% set total_credits = credits | sum(attribute='amount') %}
+    <div class="txn-summary__item">
+      <span>Total Debits</span>
+      <span class="txn-debit">-${{ "{:,.2f}".format(total_debits | abs) }}</span>
+    </div>
+    <div class="txn-summary__item">
+      <span>Total Credits</span>
+      <span class="txn-credit">+${{ "{:,.2f}".format(total_credits) }}</span>
+    </div>
+    <div class="txn-summary__item txn-summary__item--total">
+      <span>Net</span>
+      {% set net = total_debits + total_credits %}
+      <span class="{% if net >= 0 %}txn-credit{% else %}txn-debit{% endif %}">
+        {% if net >= 0 %}+{% endif %}${{ "{:,.2f}".format(net | abs) }}
+      </span>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
