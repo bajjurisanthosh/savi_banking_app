@@ -82,3 +82,15 @@ def _make_transactions():
 TRANSACTIONS = _make_transactions()
 
 CATEGORIES = _categories
+
+# Keyed by user email → list of alert rule dicts
+ALERTS = {
+    "demo@savi.com": [
+        {"id": "alr001", "threshold": 100.00, "account_id": "all", "active": True}
+    ]
+}
+
+# Keyed by user email → list of triggered notification dicts
+NOTIFICATIONS = {
+    "demo@savi.com": []
+}
