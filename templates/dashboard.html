@@ -2,6 +2,26 @@
 {% block title %}Account Overview — SaVi{% endblock %}
 
 {% block content %}
+{% if notifications %}
+<div class="alert-banners">
+  {% for notif in notifications %}
+  <div class="alert-banner">
+    <span class="alert-banner__icon">&#9888;</span>
+    <span class="alert-banner__msg">{{ notif.message }}</span>
+    <form method="POST" action="{{ url_for('dismiss_notification', ntf_id=notif.id) }}" style="display:inline">
+      <button type="submit" class="flash__close" title="Dismiss">&#215;</button>
+    </form>
+  </div>
+  {% endfor %}
+  {% if notifications | length > 1 %}
+  <div style="padding:8px 24px">
+    <form method="POST" action="{{ url_for('dismiss_all_notifications') }}">
+      <button type="submit" class="btn btn--ghost btn--sm">Clear all</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
 <section class="page-hero page-hero--blue">
   <div class="container">
     <h1>Good morning, {{ user_name.split()[0] }} 👋</h1>

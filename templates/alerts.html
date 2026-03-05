@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Spending Alerts — SaVi{% endblock %}
+{% block content %}
+<section class="page-hero page-hero--blue">
+  <div class="container">
+    <h1>Spending Alerts</h1>
+    <p>Get notified when transactions exceed your thresholds.</p>
+  </div>
+</section>
+<div class="container transfer-page">
+  <div class="transfer-layout">
+    <div class="transfer-form-card">
+      <h2>Create Alert</h2>
+      <form method="POST" class="transfer-form">
+        <input type="hidden" name="action" value="create">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="threshold">Alert when over</label>
+            <div class="input-prefix"><span>$</span>
+              <input type="number" id="threshold" name="threshold" min="1" step="0.01" placeholder="100.00" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="account_id">Account</label>
+            <select name="account_id" id="account_id">
+              <option value="all">All accounts</option>
+              {% for acct in accounts %}
+                <option value="{{ acct.id }}">{{ acct.type }} {{ acct.number }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="transfer-form__actions">
+          <button type="submit" class="btn btn--primary btn--lg">Add Alert</button>
+        </div>
+      </form>
+      <hr style="margin:24px 0">
+      <h3>Your Alerts</h3>
+      {% if not alerts %}
+        <p style="color:var(--gray-500)">No alerts set. Create one above.</p>
+      {% endif %}
+      {% for alert in alerts %}
+      <div class="alert-rule {% if not alert.active %}alert-rule--inactive{% endif %}">
+        <div class="alert-rule__text">
+          <strong>${{ "{:,.2f}".format(alert.threshold) }}</strong> threshold —
+          {% if alert.account_id == "all" %}all accounts{% else %}{{ alert.account_id }}{% endif %}
+          {% if not alert.active %}<em>(paused)</em>{% endif %}
+        </div>
+        <div class="alert-rule__actions">
+          <form method="POST" style="display:inline">
+            <input type="hidden" name="action" value="toggle">
+            <input type="hidden" name="alert_id" value="{{ alert.id }}">
+            <button type="submit" class="btn btn--outline btn--sm">{{ "Resume" if not alert.active else "Pause" }}</button>
+          </form>
+          <form method="POST" style="display:inline">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="alert_id" value="{{ alert.id }}">
+            <button type="submit" class="btn btn--ghost btn--sm">Remove</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="transfer-side">
+      <div class="info-card info-card--tip">
+        <h4>How Alerts Work</h4>
+        <ul>
+          <li>Alerts trigger instantly when you make a transfer.</li>
+          <li>Notifications appear on your dashboard.</li>
+          <li>Pause alerts without deleting them.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

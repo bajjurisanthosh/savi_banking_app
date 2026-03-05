@@ -10,6 +10,15 @@ app = Flask(__name__)
 app.secret_key = "boa-demo-secret-key-2024"
 
 
+@app.context_processor
+def inject_notifications():
+    email = session.get("user_email")
+    if email and email in db.NOTIFICATIONS:
+        notifs = db.NOTIFICATIONS[email]
+        return {"notification_count": len(notifs), "notifications": notifs}
+    return {"notification_count": 0, "notifications": []}
+
+
 # ── Auth helper ──────────────────────────────────────────────────────────────
 
 def login_required(f):
@@ -20,6 +29,28 @@ def login_required(f):
             return redirect(url_for("login"))
         return f(*args, **kwargs)
     return decorated
+
+
+# ── Alert helper ─────────────────────────────────────────────────────────────
+
+def _check_alerts(user_email, txn):
+    if user_email not in db.ALERTS:
+        return
+    notifs = db.NOTIFICATIONS.setdefault(user_email, [])
+    for alert in db.ALERTS[user_email]:
+        if not alert["active"]:
+            continue
+        if alert["account_id"] != "all" and alert["account_id"] != txn["account_id"]:
+            continue
+        if abs(txn["amount"]) > alert["threshold"]:
+            notifs.append({
+                "id": f"ntf{len(notifs):03d}",
+                "txn_id": txn["id"],
+                "message": f"Alert: ${abs(txn['amount']):,.2f} transaction at \"{txn['description']}\" exceeded your ${alert['threshold']:,.2f} threshold.",
+                "amount": txn["amount"],
+                "date": txn["date"],
+                "read": False,
+            })
 
 
 # ── Public routes ────────────────────────────────────────────────────────────
@@ -153,6 +184,7 @@ def transfer():
             "category": "Transfer",
             "account_id": from_acct,
         })
+        _check_alerts(session["user_email"], db.TRANSACTIONS[0])
 
         # Update balance
         acct["balance"] = round(acct["balance"] - amount, 2)
@@ -162,6 +194,48 @@ def transfer():
         return redirect(url_for("transfer"))
 
     return render_template("transfer.html", accounts=db.ACCOUNTS)
+
+
+@app.route("/alerts", methods=["GET", "POST"])
+@login_required
+def alerts():
+    email = session["user_email"]
+    db.ALERTS.setdefault(email, [])
+    if request.method == "POST":
+        action = request.form.get("action")
+        if action == "create":
+            threshold = float(request.form.get("threshold", 0))
+            account_id = request.form.get("account_id", "all")
+            if threshold > 0:
+                rules = db.ALERTS[email]
+                rules.append({"id": f"alr{len(rules):03d}", "threshold": threshold, "account_id": account_id, "active": True})
+                flash(f"Alert created for transactions over ${threshold:,.2f}.", "success")
+        elif action == "delete":
+            alert_id = request.form.get("alert_id")
+            db.ALERTS[email] = [a for a in db.ALERTS[email] if a["id"] != alert_id]
+            flash("Alert removed.", "info")
+        elif action == "toggle":
+            alert_id = request.form.get("alert_id")
+            for a in db.ALERTS[email]:
+                if a["id"] == alert_id:
+                    a["active"] = not a["active"]
+        return redirect(url_for("alerts"))
+    return render_template("alerts.html", alerts=db.ALERTS[email], accounts=db.ACCOUNTS, user_name=session["user_name"])
+
+
+@app.route("/notifications/dismiss/<ntf_id>", methods=["POST"])
+@login_required
+def dismiss_notification(ntf_id):
+    email = session["user_email"]
+    db.NOTIFICATIONS[email] = [n for n in db.NOTIFICATIONS.get(email, []) if n["id"] != ntf_id]
+    return redirect(request.referrer or url_for("dashboard"))
+
+
+@app.route("/notifications/dismiss-all", methods=["POST"])
+@login_required
+def dismiss_all_notifications():
+    db.NOTIFICATIONS[session["user_email"]] = []
+    return redirect(url_for("dashboard"))
 
 
 if __name__ == "__main__":
