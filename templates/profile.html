@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}My Profile — SaVi{% endblock %}
+{% block content %}
+<section class="page-hero page-hero--blue">
+  <div class="container">
+    <h1>My Profile</h1>
+    <p>Member since {{ user.member_since }}</p>
+  </div>
+</section>
+
+<div class="container transfer-page">
+  <div class="transfer-layout">
+    <div style="display:flex;flex-direction:column;gap:24px">
+
+      <!-- Stats -->
+      <div class="transfer-form-card">
+        <h2>Account Summary</h2>
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <span class="profile-stat__value">{{ total_accounts }}</span>
+            <span class="profile-stat__label">Accounts</span>
+          </div>
+          <div class="profile-stat">
+            <span class="profile-stat__value">{{ transaction_count }}</span>
+            <span class="profile-stat__label">Transactions</span>
+          </div>
+          <div class="profile-stat">
+            <span class="profile-stat__value">${{ "{:,.0f}".format(total_spent) }}</span>
+            <span class="profile-stat__label">Total Spent</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Update name -->
+      <div class="transfer-form-card">
+        <h2>Personal Information</h2>
+        <form method="POST" class="transfer-form">
+          <input type="hidden" name="action" value="update_name">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" value="{{ user.name }}" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" value="{{ email }}" disabled style="background:var(--gray-100,#f3f4f6)">
+            <small style="color:var(--gray-500)">Email cannot be changed in demo mode.</small>
+          </div>
+          <div class="transfer-form__actions">
+            <button type="submit" class="btn btn--primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Change password -->
+      <div class="transfer-form-card">
+        <h2>Change Password</h2>
+        <form method="POST" class="transfer-form">
+          <input type="hidden" name="action" value="change_password">
+          <div class="form-group">
+            <label for="current_password">Current Password</label>
+            <input type="password" id="current_password" name="current_password" required>
+          </div>
+          <div class="form-group">
+            <label for="new_password">New Password</label>
+            <input type="password" id="new_password" name="new_password" minlength="8" required>
+          </div>
+          <div class="form-group">
+            <label for="confirm_password">Confirm New Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+          </div>
+          <div class="transfer-form__actions">
+            <button type="submit" class="btn btn--primary">Change Password</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+
+    <div class="transfer-side">
+      <div class="info-card">
+        <h4>Account Details</h4>
+        <div class="info-card__row"><span>Name</span><span>{{ user.name }}</span></div>
+        <div class="info-card__row"><span>Email</span><span style="font-size:.85rem">{{ email }}</span></div>
+        <div class="info-card__row"><span>Member since</span><span>{{ user.member_since }}</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

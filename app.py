@@ -164,5 +164,51 @@ def transfer():
     return render_template("transfer.html", accounts=db.ACCOUNTS)
 
 
+@app.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    email = session["user_email"]
+    user = db.USERS[email]
+    if request.method == "POST":
+        action = request.form.get("action")
+        if action == "update_name":
+            new_name = request.form.get("name", "").strip()
+            if len(new_name) < 2:
+                flash("Name must be at least 2 characters.", "error")
+            else:
+                db.USERS[email]["name"] = new_name
+                session["user_name"] = new_name
+                flash("Name updated successfully.", "success")
+        elif action == "change_password":
+            current = request.form.get("current_password", "")
+            new_pw = request.form.get("new_password", "")
+            confirm = request.form.get("confirm_password", "")
+            if user["password"] != current:
+                flash("Current password is incorrect.", "error")
+            elif len(new_pw) < 8:
+                flash("New password must be at least 8 characters.", "error")
+            elif new_pw != confirm:
+                flash("Passwords do not match.", "error")
+            else:
+                db.USERS[email]["password"] = new_pw
+                flash("Password changed successfully.", "success")
+        return redirect(url_for("profile"))
+
+    # Compute stats
+    user_txns = [t for t in db.TRANSACTIONS if t["account_id"] in {a["id"] for a in db.ACCOUNTS}]
+    total_spent = abs(sum(t["amount"] for t in user_txns if t["amount"] < 0))
+    total_accounts = len(db.ACCOUNTS)
+
+    return render_template(
+        "profile.html",
+        user=user,
+        email=email,
+        user_name=session["user_name"],
+        total_spent=total_spent,
+        total_accounts=total_accounts,
+        transaction_count=len(user_txns),
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True)
