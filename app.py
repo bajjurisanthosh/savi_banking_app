@@ -140,6 +140,10 @@ def transfer():
             flash("Invalid source account.", "error")
             return render_template("transfer.html", accounts=db.ACCOUNTS)
 
+        if amount > acct["available"]:
+            flash(f"Insufficient funds. Available balance: ${acct['available']:,.2f}", "error")
+            return render_template("transfer.html", accounts=db.ACCOUNTS)
+
         description = f"Transfer to {to_payee}" if to_payee else "Transfer"
         if memo:
             description += f" — {memo}"
